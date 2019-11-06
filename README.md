@@ -19,6 +19,21 @@ Gravity is the first annotation based ORM for Crystal. The goal of Gravity is to
 ```crystal
 require "gravity"
 
+# Require the driver you want
+require "gravity-postgres"
+
+# Configure Gravity
+Gravity.configure do
+  register_driver "pg", Gravity::Driver::Postgres do
+    username "admin"
+    password "password"
+    host     "localhost"
+    port     5432
+  end
+
+  set_default_driver "pg"
+end
+
 # Create a model
 class User
   include Gravity::Model
@@ -41,6 +56,7 @@ class User
   # with HasMany associations
 end
 
+# And another
 class Chat
   include Gravity::Model
 
@@ -49,6 +65,22 @@ class Chat
 
   property title : String
 end
+
+# Create a new User
+user = User.new(id: 1234, first_name: "John", last_name: "Doe")
+
+# Insert it into the database (throwing on failure)
+user.save!
+
+# Query the database for the User
+user = User.where(first_name: "John") # will return an Array of matches
+user = User.find_one(id: 1234) # will return a single match
+
+# Modify the User
+user.first_name = "Joe"
+
+# Update it in the database (throwing on failure)
+user.save!
 ```
 
 ## Contributing
